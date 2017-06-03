@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_online_dictionary"
+            android:title="Dicionário online" />
+        <item
+            android:id="@+id/nav_pronunciation"
+            android:title="Pronúncia" />
+        <item
+            android:id="@+id/nav_rate"
+            android:title="Avalie este aplicativo!" />
+    </group>
+
+    <item android:title="@string/maisapps">
+        <menu>
+            <item
+                android:id="@+id/menu_gpstracker"
+                android:title="@string/gps_tracker" />
+        </menu>
+    </item>
+</menu>

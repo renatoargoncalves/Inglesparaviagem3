@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Aprender Inglês</string>
+    <string name="banner_ad_unit_id">ca-app-pub-9665998162830641/9275635409</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="searchable">searchable</string>
+    <string name="maisapps">Mais aplicativos:</string>
+    <string name="gps_tracker">Localizador de família</string>
+    <string name="rate_this_app">Avaliar este aplicativo</string>
+    <string name="please_rate_5_stars">Deslize para baixo para classificar!</string>
+    <string name="please_give_5_stars">Poderia nos classificar com 5 estrelas?</string>
+    <string name="thank_you">Obrigado!</string>
+    <string name="recomend_us_on_google">Recomendaria no Google?</string>
+</resources>
