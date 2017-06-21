@@ -8,30 +8,25 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-
-import com.google.android.gms.plus.PlusOneButton;
-import com.sow.inglesparaviagem.Log;
-
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -41,17 +36,20 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.plus.PlusOneButton;
+import com.sow.inglesparaviagem.adapters.CategoryAdapter;
+import com.sow.inglesparaviagem.adapters.PhraseAdapter;
 import com.sow.inglesparaviagem.application.MyApplication;
+import com.sow.inglesparaviagem.classes.Log;
 import com.sow.inglesparaviagem.listeners.OnSpeechEventDetected;
+import com.sow.inglesparaviagem.view.MainView;
+import com.uxcam.UXCam;
 
-import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
-import static android.view.View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.sow.inglesparaviagem.R.id.adView;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements MainView, NavigationView.OnNavigationItemSelectedListener {
 
     private static final int PLUS_ONE_REQUEST_CODE = 1515;
     private String TAG = "MainActivity";
@@ -73,6 +71,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        UXCam.startWithKey(getString(R.string.uxcamkey));
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
@@ -296,6 +296,7 @@ public class MainActivity extends AppCompatActivity
     private void speak(final CharSequence text) {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void run() {
                 myApplication.getTts().speak(text, TextToSpeech.QUEUE_FLUSH, null, "inglesparaviagem");
@@ -315,9 +316,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_online_dictionary) {
-            startActivity(new Intent(this, DictionaryActivity.class));
-        } else if (id == R.id.nav_pronunciation) {
+//        if (id == R.id.nav_online_dictionary) {
+//            startActivity(new Intent(this, DictionaryActivity.class));
+//        } else
+
+        if (id == R.id.nav_pronunciation) {
             startActivity(new Intent(this, PronunciationActivity.class));
         } else if (id == R.id.nav_rate) {
 //            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "com.sow.inglesparaviagem")));
@@ -355,5 +358,10 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mPlusOneButton.initialize("https://play.google.com/store/apps/details?id=com.sow.inglesparaviagem", PLUS_ONE_REQUEST_CODE);
+    }
+
+    @Override
+    public void showProgress(boolean showProgress) {
+        // TODO implement progress bar
     }
 }

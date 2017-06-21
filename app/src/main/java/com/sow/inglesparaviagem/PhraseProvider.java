@@ -1,11 +1,9 @@
 package com.sow.inglesparaviagem;
 
 import android.content.Context;
-import com.sow.inglesparaviagem.Log;
+import com.sow.inglesparaviagem.classes.Log;
 
 import java.util.ArrayList;
-
-import static android.content.ContentValues.TAG;
 
 public class PhraseProvider {
 

@@ -1,14 +1,16 @@
-package com.sow.inglesparaviagem;
+package com.sow.inglesparaviagem.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import com.sow.inglesparaviagem.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.sow.inglesparaviagem.PhraseProvider;
+import com.sow.inglesparaviagem.R;
+import com.sow.inglesparaviagem.classes.Log;
 
 import java.util.ArrayList;
 

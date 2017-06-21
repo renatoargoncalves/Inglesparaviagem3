@@ -1,10 +1,10 @@
 package com.sow.inglesparaviagem;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -18,36 +18,38 @@ import android.widget.TextView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.sow.inglesparaviagem.adapters.PhraseAdapter;
+import com.sow.inglesparaviagem.adapters.SimpleSectionedRecyclerViewAdapter;
 import com.sow.inglesparaviagem.application.MyApplication;
+import com.sow.inglesparaviagem.classes.Log;
 import com.sow.inglesparaviagem.listeners.OnSpeechEventDetected;
-import com.sow.inglesparaviagem.listeners.SpeechActivityDetected;
-import com.sow.inglesparaviagem.Log;
+import com.uxcam.UXCam;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.media.CamcorderProfile.get;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static android.view.View.GONE;
-import static com.sow.inglesparaviagem.R.id.adView;
-import static com.sow.inglesparaviagem.R.id.button_speak;
-import static com.sow.inglesparaviagem.R.id.button_stop;
-import static com.sow.inglesparaviagem.R.id.imageView_category;
-import static com.sow.inglesparaviagem.R.id.recyclerView_phrases;
-import static com.sow.inglesparaviagem.R.id.textView_subtitle;
 
 public class CategoryActivity extends AppCompatActivity {
+
+    @BindView(R.id.relativeLayout_category) RelativeLayout relativeLayout_category;
+    @BindView(R.id.relativeLayout_speak) RelativeLayout relativeLayout_speak;
+    @BindView(R.id.linearLayout_speak) LinearLayout linearLayout_speak;
+    @BindView(R.id.textView_title) TextView textView_title;
+    @BindView(R.id.textView_subtitle) TextView textView_subtitle;
+    @BindView(R.id.button_speak) ImageButton button_speak;
+    @BindView(R.id.button_stop) ImageButton button_stop;
+    @BindView(R.id.textView_speak_port) TextView textView_port;
+    @BindView(R.id.textView_speak_eng) TextView textView_eng;
 
     private CategoryProvider.Category category;
     private String TAG = "CategoryActivity";
     private int category_id;
-    private RelativeLayout relativeLayout_category, relativeLayout_speak;
     private ViewGroup.LayoutParams params;
-    private LinearLayout linearLayout_speak;
     private MyApplication myApplication;
-    private TextView textView_title, textView_subtitle;
-    private ImageButton button_speak;
-    private ImageButton button_stop;
-    private TextView textView_port;
-    private TextView textView_eng;
     private PhraseAdapter phraseAdapter;
     private SimpleSectionedRecyclerViewAdapter mSectionedAdapter;
     private RecyclerView.LayoutManager layoutManager_phrases;
@@ -59,16 +61,16 @@ public class CategoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
+        ButterKnife.bind(this);
+        UXCam.startWithKey(getString(R.string.uxcamkey));
 
         myApplication = (MyApplication) getApplicationContext();
 
         category_id = getIntent().getIntExtra("category_id", 0);
         category = new CategoryProvider(this).getCategoryArrayList().get(category_id);
 
-        relativeLayout_category = (RelativeLayout) findViewById(R.id.relativeLayout_category);
         params = relativeLayout_category.getLayoutParams();
 
-        relativeLayout_speak = (RelativeLayout) findViewById(R.id.relativeLayout_speak);
         relativeLayout_speak.setVisibility(GONE);
 
         ImageView imageView_category = (ImageView) findViewById(R.id.imageView_category);
@@ -77,15 +79,8 @@ public class CategoryActivity extends AppCompatActivity {
         textView_title = (TextView) findViewById(R.id.textView_title);
         textView_title.setText(category.getTitle());
 
-        textView_subtitle = (TextView) findViewById(R.id.textView_subtitle);
         textView_subtitle.setText(category.getSubtitle());
 
-        textView_port = (TextView) findViewById(R.id.textView_speak_port);
-        textView_eng = (TextView) findViewById(R.id.textView_speak_eng);
-        button_speak = (ImageButton) findViewById(R.id.button_speak);
-        button_stop = (ImageButton) findViewById(R.id.button_stop);
-
-        linearLayout_speak = (LinearLayout) findViewById(R.id.linearLayout_speak);
 
         layoutManager_phrases = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         RecyclerView recyclerView_phrases = (RecyclerView) findViewById(R.id.recyclerView_phrases);

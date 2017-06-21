@@ -5,11 +5,12 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.sow.inglesparaviagem.listeners.OnSpeechEventDetected;
 import com.sow.inglesparaviagem.listeners.SpeechActivityDetected;
+import com.uxcam.UXCam;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -33,8 +34,16 @@ public class MyApplication extends Application implements
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 10, 0);
             params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "inglesparaviagem");
             speechActivityDetected = new SpeechActivityDetected();
-        } catch (Exception e) {
 
+            String deviceId = "unknown";
+            TelephonyManager mTelephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (mTelephony.getDeviceId() != null){
+                deviceId = mTelephony.getDeviceId();
+            }
+
+            UXCam.tagUsersName(deviceId);
+        } catch (Exception e) {
+            Log.e(TAG, "onCreate()" + e.getMessage());
         }
     }
 

@@ -1,4 +1,4 @@
-package com.sow.inglesparaviagem;
+package com.sow.inglesparaviagem.classes;
 
 public class Log {
 	static final boolean LOG = false;

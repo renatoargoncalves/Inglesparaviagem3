@@ -11,6 +11,8 @@ import android.widget.RatingBar;
 import android.widget.Toast;
 
 import com.google.android.gms.plus.PlusOneButton;
+import com.sow.inglesparaviagem.classes.Log;
+import com.uxcam.UXCam;
 
 public class RateThisAppActivity extends AppCompatActivity {
 
@@ -25,6 +27,7 @@ public class RateThisAppActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rate_this_app);
+        UXCam.startWithKey(getString(R.string.uxcamkey));
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_rate);
         setSupportActionBar(toolbar);

@@ -1,4 +1,4 @@
-package com.sow.inglesparaviagem;
+package com.sow.inglesparaviagem.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

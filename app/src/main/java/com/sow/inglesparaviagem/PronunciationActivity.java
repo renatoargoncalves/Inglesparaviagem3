@@ -2,27 +2,25 @@ package com.sow.inglesparaviagem;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import com.sow.inglesparaviagem.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.sow.inglesparaviagem.application.MyApplication;
+import com.sow.inglesparaviagem.classes.Log;
 import com.sow.inglesparaviagem.listeners.OnSpeechEventDetected;
-
-import static com.sow.inglesparaviagem.R.id.editText_word;
+import com.uxcam.UXCam;
 
 public class PronunciationActivity extends AppCompatActivity {
 
@@ -40,6 +38,8 @@ public class PronunciationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pronunciation);
+
+        UXCam.startWithKey(getString(R.string.uxcamkey));
 
         myApplication = (MyApplication) getApplicationContext();
 
