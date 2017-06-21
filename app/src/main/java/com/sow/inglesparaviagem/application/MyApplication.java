@@ -3,9 +3,9 @@ package com.sow.inglesparaviagem.application;
 import android.app.Application;
 import android.content.Context;
 import android.media.AudioManager;
+import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -35,13 +35,7 @@ public class MyApplication extends Application implements
             params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "inglesparaviagem");
             speechActivityDetected = new SpeechActivityDetected();
 
-            String deviceId = "unknown";
-            TelephonyManager mTelephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-            if (mTelephony.getDeviceId() != null){
-                deviceId = mTelephony.getDeviceId();
-            }
-
-            UXCam.tagUsersName(deviceId);
+            UXCam.tagUsersName(Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID));
         } catch (Exception e) {
             Log.e(TAG, "onCreate()" + e.getMessage());
         }
