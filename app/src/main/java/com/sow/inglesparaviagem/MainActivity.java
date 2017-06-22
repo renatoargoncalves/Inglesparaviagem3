@@ -42,8 +42,13 @@ import com.sow.inglesparaviagem.adapters.PhraseAdapter;
 import com.sow.inglesparaviagem.application.MyApplication;
 import com.sow.inglesparaviagem.classes.Log;
 import com.sow.inglesparaviagem.listeners.OnSpeechEventDetected;
+import com.sow.inglesparaviagem.presenter.MainPresenter;
+import com.sow.inglesparaviagem.presenter.MainPresenterImpl;
 import com.sow.inglesparaviagem.view.MainView;
 import com.uxcam.UXCam;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -51,66 +56,51 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends AppCompatActivity
         implements MainView, NavigationView.OnNavigationItemSelectedListener {
 
+    @BindView(R.id.linearLayout_search) LinearLayout linearLayout_search;
+    @BindView(R.id.linearLayout_main_adView) LinearLayout linearLayout_main_adView;
+    @BindView(R.id.recyclerView_search) RecyclerView recyclerView_search;
+    @BindView(R.id.relativeLayout_main_speak) RelativeLayout relativeLayout_main_speak;
+    @BindView(R.id.textView_main_speak_port) TextView textView_main_speak_port;
+    @BindView(R.id.textView_main_speak_eng) TextView textView_main_speak_eng;
+    @BindView(R.id.toolbar_main) Toolbar toolbar;
+    @BindView(R.id.content_main) RelativeLayout content_main;
+    @BindView(R.id.drawer_layout) DrawerLayout drawer;
+    @BindView(R.id.nav_view) NavigationView navigationView;
+    @BindView(R.id.recyclerView_categories) RecyclerView recyclerView_categories;
+    @BindView(R.id.plus_one_button) PlusOneButton mPlusOneButton;
+    @BindView(R.id.adView) AdView adView;
+
     private static final int PLUS_ONE_REQUEST_CODE = 1515;
     private String TAG = "MainActivity";
-    private LinearLayout linearLayout_search, linearLayout_main_adView;
-    private RecyclerView recyclerView_search;
     private RecyclerView.LayoutManager layoutManager_search;
     private PhraseAdapter phraseAdapter;
-    private RelativeLayout relativeLayout_main_speak;
     private MyApplication myApplication;
     private SearchView searchView;
-    private TextView textView_main_speak_eng, textView_main_speak_port;
-    private AdView adView;
     private AdRequest adRequest;
-    private RelativeLayout content_main;
-    private PlusOneButton mPlusOneButton;
     private SharedPreferences sharedPref;
+    private RecyclerView.LayoutManager layoutManager;
+
+    private MainPresenter mMainPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         UXCam.startWithKey(getString(R.string.uxcamkey));
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
-        setSupportActionBar(toolbar);
-
-        content_main = (RelativeLayout) findViewById(R.id.content_main);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            content_main.setBackground(getResources().getDrawable(R.color.lightGray, null));
-        } else {
-            content_main.setBackgroundColor(getResources().getColor(R.color.lightGray));
-        }
-
         myApplication = (MyApplication) getApplicationContext();
-
         sharedPref = getPreferences(Context.MODE_PRIVATE);
+        setupToolbar();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        content_main.setBackground(getResources().getDrawable(R.color.lightGray, null));
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        setupNavigationView();
 
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false);
-        RecyclerView recyclerView_categories = (RecyclerView) findViewById(R.id.recyclerView_categories);
-        recyclerView_categories.setLayoutManager(layoutManager);
-        CategoryAdapter mAdapter = new CategoryAdapter(this);
-        recyclerView_categories.setAdapter(mAdapter);
-        mAdapter.setOnItemClickListener(onItemClickListener);
+        setupRecyclerView();
 
         layoutManager_search = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView_search = (RecyclerView) findViewById(R.id.recyclerView_search);
         recyclerView_search.setLayoutManager(layoutManager_search);
-
-        linearLayout_search = (LinearLayout) findViewById(R.id.linearLayout_search);
         linearLayout_search.setVisibility(GONE);
-
-        relativeLayout_main_speak = (RelativeLayout) findViewById(R.id.relativeLayout_main_speak);
         relativeLayout_main_speak.setVisibility(GONE);
 
         myApplication.getSpeechActivityDetected().setOnEventListener(new OnSpeechEventDetected() {
@@ -126,23 +116,44 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        textView_main_speak_port = (TextView) findViewById(R.id.textView_main_speak_port);
-        textView_main_speak_eng = (TextView) findViewById(R.id.textView_main_speak_eng);
+        setupPlusOneButton();
+        setupAds();
 
-        linearLayout_main_adView = (LinearLayout) findViewById(R.id.linearLayout_main_adView);
+        mMainPresenter = new MainPresenterImpl(this);
+        mMainPresenter.loadCategories(this);
+    }
 
-        mPlusOneButton = (PlusOneButton) findViewById(R.id.plus_one_button);
+    private void setupRecyclerView() {
+        layoutManager = new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false);
+        recyclerView_categories.setLayoutManager(layoutManager);
+        recyclerView_categories.setAdapter(null);
+//        CategoryAdapter mAdapter = new CategoryAdapter(this);
+//        recyclerView_categories.setAdapter(mAdapter);
+//
+//        mAdapter.setOnItemClickListener(onItemClickListener);
+    }
+
+    private void setupNavigationView() {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void setupPlusOneButton() {
         boolean liked = sharedPref.getBoolean("liked", false);
         if(liked) {
             mPlusOneButton.setVisibility(GONE);
         } else {
             mPlusOneButton.setVisibility(VISIBLE);
         }
+    }
 
+    private void setupAds() {
         try {
             Log.i(TAG, "adView - preparing");
 
-            adView = (AdView) findViewById(R.id.adView);
             adView.setVisibility(View.GONE);
             adRequest = new AdRequest.Builder()
                     .addTestDevice("C6E27E792E9C776653A67DDF90F3CB03")
@@ -185,6 +196,11 @@ public class MainActivity extends AppCompatActivity
             adView.setVisibility(View.GONE);
             Log.i(TAG, "adView - finished");
         }
+
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(toolbar);
     }
 
     CategoryAdapter.OnItemClickListener onItemClickListener = new CategoryAdapter.OnItemClickListener() {
@@ -192,10 +208,10 @@ public class MainActivity extends AppCompatActivity
         public void onItemClick(View v, int position) {
             Intent transitionIntent = new Intent(MainActivity.this, CategoryActivity.class);
             transitionIntent.putExtra("category_id", position);
+
             ImageView imageView = (ImageView) v.findViewById(R.id.imageView_category);
             LinearLayout linearLayout_title = (LinearLayout) v.findViewById(R.id.linearLayout_title);
             TextView textViewTitle = (TextView) v.findViewById(R.id.textView_title);
-
 
             Pair<View, String> imagePair = Pair.create((View) imageView, "tImageView");
             Pair<View, String> titlePair = Pair.create((View) linearLayout_title, "tLinearLayout_title");
@@ -207,7 +223,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -329,7 +344,6 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "com.sow.gpstrackerpro")));
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

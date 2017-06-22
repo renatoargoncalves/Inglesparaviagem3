@@ -3,7 +3,6 @@ package com.sow.inglesparaviagem.model;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.sow.inglesparaviagem.R;
 import com.sow.inglesparaviagem.classes.Log;
 import com.sow.inglesparaviagem.events.OnLoadCategoriesCanceledEvent;
 import com.sow.inglesparaviagem.events.OnLoadCategoriesEvent;
@@ -12,9 +11,9 @@ import com.sow.inglesparaviagem.events.OnLoadCategoriesFailEvent;
 import org.greenrobot.eventbus.EventBus;
 
 
-public class MainModelImpl implements MainModel {
+public class CategoryModelImpl implements CategoryModel {
 
-    private static final String TAG = "UserLoginModelImpl";
+    private static final String TAG = "CategoryModelImpl";
 
     @Override
     public void loadCategories(Context context) {
@@ -36,9 +35,11 @@ public class MainModelImpl implements MainModel {
             super.onPreExecute();
             try {
                 Log.w(TAG, "LoadCategoriesTask.onPreExecute() ");
+
             } catch (Exception e) {
                 Log.e(TAG, "LoadCategoriesTask.onPreExecute(): " + e.getMessage());
             }
+
         }
 
 
@@ -48,10 +49,6 @@ public class MainModelImpl implements MainModel {
             try {
                 Log.w(TAG, "LoadCategoriesTask().doInBackground()");
 
-                String[] strCategories = mContext.getResources().getStringArray(R.array.categories);
-                for (int i = 0; i < strCategories.length; i++) {
-                    Log.i(TAG, "LoadCategoriesTask().doInBackground(): strCategories["+i+"]: "+strCategories[i]);
-                }
                 return result;
             } catch (Exception e) {
                 Log.e(TAG, "LoadCategoriesTask.doInBackGround(): " + e.getMessage());

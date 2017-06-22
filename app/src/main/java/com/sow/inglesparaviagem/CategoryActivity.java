@@ -23,6 +23,7 @@ import com.sow.inglesparaviagem.adapters.SimpleSectionedRecyclerViewAdapter;
 import com.sow.inglesparaviagem.application.MyApplication;
 import com.sow.inglesparaviagem.classes.Log;
 import com.sow.inglesparaviagem.listeners.OnSpeechEventDetected;
+import com.sow.inglesparaviagem.view.CategoryView;
 import com.uxcam.UXCam;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import butterknife.ButterKnife;
 
 import static android.view.View.GONE;
 
-public class CategoryActivity extends AppCompatActivity {
+public class CategoryActivity extends AppCompatActivity implements CategoryView {
 
     @BindView(R.id.relativeLayout_category) RelativeLayout relativeLayout_category;
     @BindView(R.id.relativeLayout_speak) RelativeLayout relativeLayout_speak;
@@ -44,6 +45,9 @@ public class CategoryActivity extends AppCompatActivity {
     @BindView(R.id.button_stop) ImageButton button_stop;
     @BindView(R.id.textView_speak_port) TextView textView_port;
     @BindView(R.id.textView_speak_eng) TextView textView_eng;
+    @BindView(R.id.imageView_category) ImageView imageView_category;
+    @BindView(R.id.adView) AdView adView;
+    @BindView(R.id.recyclerView_phrases) RecyclerView recyclerView_phrases;
 
     private CategoryProvider.Category category;
     private String TAG = "CategoryActivity";
@@ -53,7 +57,6 @@ public class CategoryActivity extends AppCompatActivity {
     private PhraseAdapter phraseAdapter;
     private SimpleSectionedRecyclerViewAdapter mSectionedAdapter;
     private RecyclerView.LayoutManager layoutManager_phrases;
-    private AdView adView;
     private AdRequest adRequest;
 
 
@@ -73,17 +76,14 @@ public class CategoryActivity extends AppCompatActivity {
 
         relativeLayout_speak.setVisibility(GONE);
 
-        ImageView imageView_category = (ImageView) findViewById(R.id.imageView_category);
         imageView_category.setImageResource(category.image_id);
 
-        textView_title = (TextView) findViewById(R.id.textView_title);
         textView_title.setText(category.getTitle());
-
         textView_subtitle.setText(category.getSubtitle());
 
 
         layoutManager_phrases = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        RecyclerView recyclerView_phrases = (RecyclerView) findViewById(R.id.recyclerView_phrases);
+
         recyclerView_phrases.setLayoutManager(layoutManager_phrases);
         phraseAdapter = new PhraseAdapter(this, category.getIdentifier(), false);
 
@@ -118,8 +118,6 @@ public class CategoryActivity extends AppCompatActivity {
 
         try {
             Log.i(TAG, "adView - preparing");
-
-            adView = (AdView) findViewById(R.id.adView);
 
             adView.setVisibility(View.GONE);
             adRequest = new AdRequest.Builder()
@@ -302,5 +300,10 @@ public class CategoryActivity extends AppCompatActivity {
             adView.setVisibility(View.GONE);
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void showProgress(boolean showProgress) {
+
     }
 }
