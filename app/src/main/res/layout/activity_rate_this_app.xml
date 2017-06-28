@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    tools:context="com.sow.inglesparaviagem.RateThisAppActivity">
+    tools:mContext="com.sow.inglesparaviagem.RateThisAppActivity">
 
 
     <android.support.v7.widget.Toolbar

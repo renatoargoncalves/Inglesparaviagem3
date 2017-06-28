@@ -2,7 +2,7 @@
 <resources>
 
     <string-array name="categories">
-        <item>basics#Básico#Palavras e frases básicas.</item>
+        <item>abc#Básico#Palavras e frases básicas.</item>
         <item>airport#Aeroporto#Partindo e chegando.</item>
         <item>car#Carro#Modelo, preço, opções.</item>
         <item>directions#Direções#Como chegar.</item>

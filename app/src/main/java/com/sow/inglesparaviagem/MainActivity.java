@@ -18,7 +18,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -40,12 +39,19 @@ import com.google.android.gms.plus.PlusOneButton;
 import com.sow.inglesparaviagem.adapters.CategoryAdapter;
 import com.sow.inglesparaviagem.adapters.PhraseAdapter;
 import com.sow.inglesparaviagem.application.MyApplication;
+import com.sow.inglesparaviagem.classes.Category;
 import com.sow.inglesparaviagem.classes.Log;
-import com.sow.inglesparaviagem.listeners.OnSpeechEventDetected;
+import com.sow.inglesparaviagem.events.OnLoadCategoriesEvent;
 import com.sow.inglesparaviagem.presenter.MainPresenter;
 import com.sow.inglesparaviagem.presenter.MainPresenterImpl;
 import com.sow.inglesparaviagem.view.MainView;
 import com.uxcam.UXCam;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -81,14 +87,16 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView.LayoutManager layoutManager;
 
     private MainPresenter mMainPresenter;
+    private ArrayList<Category> mCategories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.w(TAG, "onCreate()");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         UXCam.startWithKey(getString(R.string.uxcamkey));
-        myApplication = (MyApplication) getApplicationContext();
+
         sharedPref = getPreferences(Context.MODE_PRIVATE);
         setupToolbar();
 
@@ -96,41 +104,37 @@ public class MainActivity extends AppCompatActivity
 
         setupNavigationView();
 
-        setupRecyclerView();
+//        layoutManager_search = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+//        recyclerView_search.setLayoutManager(layoutManager_search);
+//        linearLayout_search.setVisibility(GONE);
+//        relativeLayout_main_speak.setVisibility(GONE);
 
-        layoutManager_search = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView_search.setLayoutManager(layoutManager_search);
-        linearLayout_search.setVisibility(GONE);
-        relativeLayout_main_speak.setVisibility(GONE);
+//        myApplication.getSpeechActivityDetected().setOnEventListener(new OnSpeechEventDetected() {
+//            @Override
+//            public void onEvent(String event) {
+//                if (event.equals("startSpeech")) {
+////                    setupButtonsForSpeech();
+//                } else if (event.equals("stopSpeech")) {
+//                    setupButtonsForSilence();
+//                } else {
+//
+//                }
+//            }
+//        });
 
-        myApplication.getSpeechActivityDetected().setOnEventListener(new OnSpeechEventDetected() {
-            @Override
-            public void onEvent(String event) {
-                if (event.equals("startSpeech")) {
-//                    setupButtonsForSpeech();
-                } else if (event.equals("stopSpeech")) {
-                    setupButtonsForSilence();
-                } else {
-
-                }
-            }
-        });
-
-        setupPlusOneButton();
+//        setupPlusOneButton();
         setupAds();
 
         mMainPresenter = new MainPresenterImpl(this);
         mMainPresenter.loadCategories(this);
     }
 
-    private void setupRecyclerView() {
-        layoutManager = new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false);
+    private void setupRecyclerView(CategoryAdapter mAdapter) {
+        Log.w(TAG, "setupRecyclerView()");
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView_categories.setLayoutManager(layoutManager);
-        recyclerView_categories.setAdapter(null);
-//        CategoryAdapter mAdapter = new CategoryAdapter(this);
-//        recyclerView_categories.setAdapter(mAdapter);
-//
-//        mAdapter.setOnItemClickListener(onItemClickListener);
+        recyclerView_categories.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener(onItemClickListener);
     }
 
     private void setupNavigationView() {
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity
 
             adView.setVisibility(View.GONE);
             adRequest = new AdRequest.Builder()
-                    .addTestDevice("C6E27E792E9C776653A67DDF90F3CB03")
+                    .addTestDevice("E74C03E550CA044A0E2F5F27B86BAA1B")
                     .build();
 
             adView.setAdListener(new AdListener() {
@@ -206,17 +210,22 @@ public class MainActivity extends AppCompatActivity
     CategoryAdapter.OnItemClickListener onItemClickListener = new CategoryAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(View v, int position) {
+            Toast.makeText(getApplicationContext(), "Hey ho!", Toast.LENGTH_SHORT).show();
             Intent transitionIntent = new Intent(MainActivity.this, CategoryActivity.class);
-            transitionIntent.putExtra("category_id", position);
 
+            transitionIntent.putExtra("category", mCategories.get(position).getCategory());
+
+            RelativeLayout relativeLayout = (RelativeLayout) v.findViewById(R.id.relativeLayout_category);
             ImageView imageView = (ImageView) v.findViewById(R.id.imageView_category);
-            LinearLayout linearLayout_title = (LinearLayout) v.findViewById(R.id.linearLayout_title);
+            transitionIntent.putExtra("image", mCategories.get(position).getImage());
             TextView textViewTitle = (TextView) v.findViewById(R.id.textView_title);
+            transitionIntent.putExtra("title", mCategories.get(position).getTitle());
 
             Pair<View, String> imagePair = Pair.create((View) imageView, "tImageView");
-            Pair<View, String> titlePair = Pair.create((View) linearLayout_title, "tLinearLayout_title");
+            Pair<View, String> textViewTitlePair = Pair.create((View) textViewTitle, "tTextView");
+            Pair<View, String> layoutPair = Pair.create((View) relativeLayout, "tRelativeLayout");
 
-            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, imagePair, titlePair);
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, imagePair, textViewTitlePair, layoutPair);
             ActivityCompat.startActivity(MainActivity.this, transitionIntent, options.toBundle());
         }
     };
@@ -248,37 +257,37 @@ public class MainActivity extends AppCompatActivity
             public boolean onQueryTextChange(String newText) {
 
                 if (newText.length() > 0) {
-                    phraseAdapter = new PhraseAdapter(MainActivity.this, newText.toLowerCase(), true);
-                    recyclerView_search.setAdapter(phraseAdapter);
-                    phraseAdapter.setOnItemClickListener(new PhraseAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(View view, final int position) {
+//                    phraseAdapter = new PhraseAdapter(MainActivity.this, newText.toLowerCase(), true);
+//                    recyclerView_search.setAdapter(phraseAdapter);
+//                    phraseAdapter.setOnItemClickListener(new PhraseAdapter.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClick(View view, final int position) {
 //                            Handler handler = new Handler();
 //                            handler.postDelayed(new Runnable() {
 //                                @Override
 //                                public void run() {
 ////                                    linearLayout_main_adView.setVisibility(GONE);
-//                                    textView_main_speak_port.setText(phraseAdapter.getPhrasesArrayList().get(position).getPort());
-//                                    textView_main_speak_eng.setText(phraseAdapter.getPhrasesArrayList().get(position).getEng());
+//                                    textView_main_speak_port.setText(phraseAdapter.getmPhrases().get(position).getPort());
+//                                    textView_main_speak_eng.setText(phraseAdapter.getmPhrases().get(position).getEng());
 //                                    relativeLayout_main_speak.setVisibility(VISIBLE);
-//                                    speak(phraseAdapter.getPhrasesArrayList().get(position).getEng());
+//                                    speak(phraseAdapter.getmPhrases().get(position).getEng());
 //                                }
 //                            }, 200);
-                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-
-                            Intent intent = new Intent(MainActivity.this, SpeakActvity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("port", phraseAdapter.getPhrasesArrayList().get(position).getPort());
-                            bundle.putString("eng", phraseAdapter.getPhrasesArrayList().get(position).getEng());
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-                        }
-                    });
-                    linearLayout_search.setVisibility(VISIBLE);
+//                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                            imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+//
+//                            Intent intent = new Intent(MainActivity.this, SpeakActvity.class);
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString("port", phraseAdapter.getmPhrases().get(position).getPort());
+//                            bundle.putString("eng", phraseAdapter.getmPhrases().get(position).getEng());
+//                            intent.putExtras(bundle);
+//                            startActivity(intent);
+//                        }
+//                    });
+//                    linearLayout_search.setVisibility(VISIBLE);
                 } else {
-                    if (linearLayout_search.getVisibility() == VISIBLE)
-                        linearLayout_search.setVisibility(GONE);
+//                    if (linearLayout_search.getVisibility() == VISIBLE)
+//                        linearLayout_search.setVisibility(GONE);
                 }
                 return false;
             }
@@ -377,5 +386,28 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void showProgress(boolean showProgress) {
         // TODO implement progress bar
+    }
+
+    /**
+     * @param onLoadCategoriesEvent
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoadCategoriesEvent(OnLoadCategoriesEvent onLoadCategoriesEvent) {
+        Log.w(TAG, "onLoadCategoriesEvent()");
+        mCategories = onLoadCategoriesEvent.getCategories();
+        setupRecyclerView(new CategoryAdapter(this, mCategories));
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 }

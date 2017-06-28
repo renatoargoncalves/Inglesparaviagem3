@@ -21,8 +21,8 @@ public class CategoryPresenterImpl implements CategoryPresenter {
     }
 
     @Override
-    public void loadCategories(Context context) {
+    public void loadPhrases(Context context, String category) {
         categoryView.showProgress(true);
-        categoryModel.loadCategories(context);
+        categoryModel.loadPhrases(context, category);
     }
 }

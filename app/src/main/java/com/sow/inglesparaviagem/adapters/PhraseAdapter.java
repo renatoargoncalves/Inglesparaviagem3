@@ -8,9 +8,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.sow.inglesparaviagem.PhraseProvider;
 import com.sow.inglesparaviagem.R;
-import com.sow.inglesparaviagem.classes.Log;
+import com.sow.inglesparaviagem.classes.Phrase;
 
 import java.util.ArrayList;
 
@@ -18,14 +17,12 @@ public class PhraseAdapter extends RecyclerView.Adapter<PhraseAdapter.ViewHolder
 
     private final static String TAG = "PhraseAdapter";
     private Context context;
-    private ArrayList<PhraseProvider.Phrase> phrasesArrayList = new ArrayList<>();
+    private ArrayList<Phrase> mPhrases = new ArrayList<>();
     private OnItemClickListener mItemClickListener;
 
-    public PhraseAdapter(Context context, String identifier, boolean search) {
-        Log.i(TAG, "PhraseAdapter(): "+identifier);
-        Log.i(TAG, "PhraseAdapter(): "+search);
+    public PhraseAdapter(Context context, ArrayList<Phrase> phrases, boolean search) {
         this.context = context;
-        phrasesArrayList = new PhraseProvider(context, identifier, search).getPhraseArrayList();
+        mPhrases = phrases;
     }
 
     @Override
@@ -36,13 +33,13 @@ public class PhraseAdapter extends RecyclerView.Adapter<PhraseAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(final PhraseAdapter.ViewHolder holder, final int position) {
-        holder.textView_port.setText(phrasesArrayList.get(position).getPort());
-        holder.textView_eng.setText(phrasesArrayList.get(position).getEng());
+        holder.textView_port.setText(mPhrases.get(position).getPort());
+        holder.textView_eng.setText(mPhrases.get(position).getEng());
     }
 
     @Override
     public int getItemCount() {
-        return phrasesArrayList.size();
+        return mPhrases.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -75,11 +72,4 @@ public class PhraseAdapter extends RecyclerView.Adapter<PhraseAdapter.ViewHolder
         this.mItemClickListener = mItemClickListener;
     }
 
-    public ArrayList<PhraseProvider.Phrase> getPhrasesArrayList() {
-        return phrasesArrayList;
-    }
-
-    public void setPhrasesArrayList(ArrayList<PhraseProvider.Phrase> phrasesArrayList) {
-        this.phrasesArrayList = phrasesArrayList;
-    }
 }

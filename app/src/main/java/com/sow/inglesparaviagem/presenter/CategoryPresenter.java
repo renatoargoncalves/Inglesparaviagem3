@@ -8,6 +8,6 @@ import android.content.Context;
 
 public interface CategoryPresenter {
 
-    void loadCategories(Context context);
+    void loadPhrases(Context context, String category);
 
 }
