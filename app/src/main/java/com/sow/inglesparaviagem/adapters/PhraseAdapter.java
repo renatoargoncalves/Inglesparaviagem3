@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sow.inglesparaviagem.R;
+import com.sow.inglesparaviagem.classes.Log;
 import com.sow.inglesparaviagem.classes.Phrase;
 
 import java.util.ArrayList;
@@ -56,9 +57,9 @@ public class PhraseAdapter extends RecyclerView.Adapter<PhraseAdapter.ViewHolder
 
         @Override
         public void onClick(View v) {
+            Log.w(TAG, "PhraseAdapter.onClick()");
             if (mItemClickListener != null) {
                 mItemClickListener.onItemClick(itemView, getPosition());
-//                Toast.makeText(context, "clicado", Toast.LENGTH_SHORT).show();
             }
         }
 

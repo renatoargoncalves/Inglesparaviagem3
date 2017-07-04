@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_category"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:mContext="com.sow.inglesparaviagem.CategoryActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayoutCategoty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        android:id="@+id/appBarLayoutCategoty">
+        android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_category"
@@ -37,41 +37,57 @@
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:src="@drawable/abc"
-            android:transitionName="tImageView"/>
+            android:transitionName="tImageView" />
 
         <TextView
             android:id="@+id/textView_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Title"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/imageView_category"
-            android:transitionName="tTextView"/>
+            android:text="Title"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:transitionName="tTextView" />
     </RelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/linearLayout_main_adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/relativeLayout_category"
+        android:orientation="vertical">
+
+        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            ads:adSize="SMART_BANNER"
+            ads:adUnitId="ca-app-pub-9665998162830641/3829769006"></com.google.android.gms.ads.AdView>
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView_phrases"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/relativeLayout_category"
+        android:layout_below="@+id/linearLayout_main_adView"
         android:background="@color/lightGray">
 
     </android.support.v7.widget.RecyclerView>
 
     <RelativeLayout
+        android:id="@+id/relativeLayout_speak"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/relativeLayout_speak"
         android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/darkGray"
+            android:layout_above="@+id/linearLayout_speak"
             android:alpha=".8"
-            android:layout_above="@+id/linearLayout_speak">
+            android:background="@color/darkGray">
 
         </LinearLayout>
 
@@ -126,9 +142,137 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:src="@drawable/ic_stop"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </LinearLayout>
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/llSpeaker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/rlSettingsPanelContainer"
+        android:background="@color/colorPrimary"
+        android:clickable="true"
+        android:elevation="8dp">
+
+        <RelativeLayout
+            android:id="@+id/rlPhrase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:clickable="true"
+            android:elevation="8dp"
+            android:layout_toLeftOf="@+id/rlSettings"
+            android:layout_alignParentLeft="true">
+
+            <ImageButton
+                android:id="@+id/imageView_icon_speaker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_action_speaker" />
+
+            <TextView
+                android:id="@+id/textViewPhraseEng"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/imageView_icon_speaker"
+                android:text="Please, where can I exchange money?"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+                android:textColor="@color/white" />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:clickable="true"
+            android:elevation="8dp"
+            android:layout_alignParentRight="true">
+
+            <ImageButton
+                android:id="@+id/imageView_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="8dp"
+                android:background="?android:selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_action_show" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/rlSettingsPanelContainer"
+        android:layout_alignParentBottom="true"
+        android:clickable="true"
+        android:elevation="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rlSettingsPanel"
+            android:padding="8dp"
+            android:background="@color/colorPrimary"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Configurações de audio:"
+                android:textColor="@color/white"
+                android:id="@+id/tvSettings"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/tvSpeechSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Velocidade de fala:"
+                android:textColor="@color/white"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="24dp"
+                android:layout_below="@+id/tvSettings"/>
+
+
+            <SeekBar
+                android:id="@+id/seekBarSpeechSpeed"
+                android:layout_toRightOf="@+id/tvSpeechSpeed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvSettings"
+                android:layout_marginTop="24dp"/>
+
+            <TextView
+                android:id="@+id/tvVolume"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Volume de fala:"
+                android:textColor="@color/white"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_below="@+id/tvSpeechSpeed"/>
+
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_alignStart="@+id/seekBarSpeechSpeed"
+                android:layout_toRightOf="@+id/tvVolume"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/seekBarSpeechSpeed"
+                android:layout_marginTop="24dp"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
 </RelativeLayout>

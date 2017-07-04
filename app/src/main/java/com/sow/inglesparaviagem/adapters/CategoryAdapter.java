@@ -11,16 +11,20 @@ import android.widget.TextView;
 
 import com.sow.inglesparaviagem.R;
 import com.sow.inglesparaviagem.classes.Category;
+import com.sow.inglesparaviagem.classes.Log;
 
 import java.util.ArrayList;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
+    private final static String TAG = "CategoryAdapter";
     private Context mContext;
     private ArrayList<Category> mCategories = new ArrayList<>();
     private OnItemClickListener mItemClickListener;
 
+
     public CategoryAdapter(Context context, ArrayList<Category> categories) {
+        Log.w(TAG, "CategoryAdapter()");
         mContext = context;
         mCategories = categories;
     }
@@ -57,6 +61,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
+            Log.w(TAG, "CategoryAdapter.onClick()");
             if (mItemClickListener != null) {
                 mItemClickListener.onItemClick(itemView, getPosition());
             }

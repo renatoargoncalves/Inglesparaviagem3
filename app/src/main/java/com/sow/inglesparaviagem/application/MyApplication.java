@@ -9,8 +9,13 @@ import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.sow.inglesparaviagem.events.OnErrorSpeaking;
+import com.sow.inglesparaviagem.events.OnStartSpeaking;
+import com.sow.inglesparaviagem.events.OnStopSpeaking;
 import com.sow.inglesparaviagem.listeners.SpeechActivityDetected;
 import com.uxcam.UXCam;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -24,14 +29,17 @@ public class MyApplication extends Application implements
     private HashMap<String, String> params = new HashMap<String, String>();
     private SpeechActivityDetected speechActivityDetected;
 
+
     @Override
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate()");
         try {
             tts = new TextToSpeech(this, this);
+
             AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 10, 0);
+
             params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "inglesparaviagem");
             speechActivityDetected = new SpeechActivityDetected();
 
@@ -52,17 +60,19 @@ public class MyApplication extends Application implements
                         @Override
                         public void onStart(String s) {
                             Log.i(TAG, "onStart()");
-                            speechActivityDetected.doEvent("startSpeech");
+                            EventBus.getDefault().post(new OnStartSpeaking());
                         }
 
                         @Override
                         public void onDone(String s) {
                             Log.i(TAG, "onDone()");
-                            speechActivityDetected.doEvent("stopSpeech");
+                            EventBus.getDefault().post(new OnStopSpeaking());
                         }
 
                         @Override
                         public void onError(String s) {
+                            Log.i(TAG, "onError()");
+                            EventBus.getDefault().post(new OnErrorSpeaking());
                         }
                     });
                 } else {

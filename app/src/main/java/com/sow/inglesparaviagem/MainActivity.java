@@ -4,11 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.speech.tts.TextToSpeech;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -25,7 +22,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -92,7 +88,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.w(TAG, "onCreate()");
+        Log.w(TAG, "MainActivity.onCreate()");
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         UXCam.startWithKey(getString(R.string.uxcamkey));
@@ -104,25 +100,6 @@ public class MainActivity extends AppCompatActivity
 
         setupNavigationView();
 
-//        layoutManager_search = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-//        recyclerView_search.setLayoutManager(layoutManager_search);
-//        linearLayout_search.setVisibility(GONE);
-//        relativeLayout_main_speak.setVisibility(GONE);
-
-//        myApplication.getSpeechActivityDetected().setOnEventListener(new OnSpeechEventDetected() {
-//            @Override
-//            public void onEvent(String event) {
-//                if (event.equals("startSpeech")) {
-////                    setupButtonsForSpeech();
-//                } else if (event.equals("stopSpeech")) {
-//                    setupButtonsForSilence();
-//                } else {
-//
-//                }
-//            }
-//        });
-
-//        setupPlusOneButton();
         setupAds();
 
         mMainPresenter = new MainPresenterImpl(this);
@@ -130,12 +107,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupRecyclerView(CategoryAdapter mAdapter) {
-        Log.w(TAG, "setupRecyclerView()");
+        Log.w(TAG, "MainActivity.setupRecyclerView()");
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView_categories.setLayoutManager(layoutManager);
         recyclerView_categories.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener(onItemClickListener);
     }
+
+
 
     private void setupNavigationView() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -257,37 +236,9 @@ public class MainActivity extends AppCompatActivity
             public boolean onQueryTextChange(String newText) {
 
                 if (newText.length() > 0) {
-//                    phraseAdapter = new PhraseAdapter(MainActivity.this, newText.toLowerCase(), true);
-//                    recyclerView_search.setAdapter(phraseAdapter);
-//                    phraseAdapter.setOnItemClickListener(new PhraseAdapter.OnItemClickListener() {
-//                        @Override
-//                        public void onItemClick(View view, final int position) {
-//                            Handler handler = new Handler();
-//                            handler.postDelayed(new Runnable() {
-//                                @Override
-//                                public void run() {
-////                                    linearLayout_main_adView.setVisibility(GONE);
-//                                    textView_main_speak_port.setText(phraseAdapter.getmPhrases().get(position).getPort());
-//                                    textView_main_speak_eng.setText(phraseAdapter.getmPhrases().get(position).getEng());
-//                                    relativeLayout_main_speak.setVisibility(VISIBLE);
-//                                    speak(phraseAdapter.getmPhrases().get(position).getEng());
-//                                }
-//                            }, 200);
-//                            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                            imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-//
-//                            Intent intent = new Intent(MainActivity.this, SpeakActvity.class);
-//                            Bundle bundle = new Bundle();
-//                            bundle.putString("port", phraseAdapter.getmPhrases().get(position).getPort());
-//                            bundle.putString("eng", phraseAdapter.getmPhrases().get(position).getEng());
-//                            intent.putExtras(bundle);
-//                            startActivity(intent);
-//                        }
-//                    });
-//                    linearLayout_search.setVisibility(VISIBLE);
+                    Toast.makeText(MainActivity.this, "lenght > 0", Toast.LENGTH_SHORT).show();
                 } else {
-//                    if (linearLayout_search.getVisibility() == VISIBLE)
-//                        linearLayout_search.setVisibility(GONE);
+                    Toast.makeText(MainActivity.this, "lenght <= 0", Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -295,38 +246,6 @@ public class MainActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void setupButtonsForSilence() {
-        Log.i(TAG, "setupButtonsForStop");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).
-                                toggleSoftInput(InputMethodManager.SHOW_FORCED,
-                                        InputMethodManager.HIDE_IMPLICIT_ONLY);
-
-                        relativeLayout_main_speak.setVisibility(View.GONE);
-//                        linearLayout_main_adView.setVisibility(VISIBLE);
-                    }
-                }, 800);
-            }
-        });
-
-    }
-
-    private void speak(final CharSequence text) {
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void run() {
-                myApplication.getTts().speak(text, TextToSpeech.QUEUE_FLUSH, null, "inglesparaviagem");
-            }
-        }, 500);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -339,15 +258,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-//        if (id == R.id.nav_online_dictionary) {
-//            startActivity(new Intent(this, DictionaryActivity.class));
-//        } else
-
         if (id == R.id.nav_pronunciation) {
             startActivity(new Intent(this, PronunciationActivity.class));
         } else if (id == R.id.nav_rate) {
-//            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "com.sow.inglesparaviagem")));
             startActivity(new Intent(this, RateThisAppActivity.class));
         } else if (id == R.id.menu_gpstracker) {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + "com.sow.gpstrackerpro")));
@@ -393,7 +306,7 @@ public class MainActivity extends AppCompatActivity
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLoadCategoriesEvent(OnLoadCategoriesEvent onLoadCategoriesEvent) {
-        Log.w(TAG, "onLoadCategoriesEvent()");
+        Log.w(TAG, "MainActivity.onLoadCategoriesEvent()");
         mCategories = onLoadCategoriesEvent.getCategories();
         setupRecyclerView(new CategoryAdapter(this, mCategories));
     }
