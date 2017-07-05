@@ -12,9 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,20 +46,8 @@ public class CategoryActivity extends AppCompatActivity implements CategoryView 
 
     @BindView(R.id.relativeLayout_category)
     RelativeLayout relativeLayout_category;
-    @BindView(R.id.relativeLayout_speak)
-    RelativeLayout relativeLayout_speak;
-    @BindView(R.id.linearLayout_speak)
-    LinearLayout linearLayout_speak;
     @BindView(R.id.textView_title)
     TextView textView_title;
-    @BindView(R.id.button_speak)
-    ImageButton button_speak;
-    @BindView(R.id.button_stop)
-    ImageButton button_stop;
-    @BindView(R.id.textView_speak_port)
-    TextView textView_port;
-    @BindView(R.id.textView_speak_eng)
-    TextView textView_eng;
     @BindView(R.id.imageView_category)
     ImageView imageView_category;
     @BindView(R.id.recyclerView_phrases)

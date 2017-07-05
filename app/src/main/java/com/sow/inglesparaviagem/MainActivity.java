@@ -61,9 +61,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.linearLayout_search) LinearLayout linearLayout_search;
     @BindView(R.id.linearLayout_main_adView) LinearLayout linearLayout_main_adView;
     @BindView(R.id.recyclerView_search) RecyclerView recyclerView_search;
-    @BindView(R.id.relativeLayout_main_speak) RelativeLayout relativeLayout_main_speak;
-    @BindView(R.id.textView_main_speak_port) TextView textView_main_speak_port;
-    @BindView(R.id.textView_main_speak_eng) TextView textView_main_speak_eng;
     @BindView(R.id.toolbar_main) Toolbar toolbar;
     @BindView(R.id.content_main) RelativeLayout content_main;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;

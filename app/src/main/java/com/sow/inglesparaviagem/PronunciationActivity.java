@@ -52,8 +52,6 @@ public class PronunciationActivity extends AppCompatActivity {
         editText_pronunciation = (EditText) findViewById(R.id.editText_pronunciation);
         button_pronunciation_speak = (ImageButton) findViewById(R.id.button_pronunciation_speak);
         button_pronunciation_stop = (ImageButton) findViewById(R.id.button_pronunciation_stop);
-        linearLayout_pronunciation_speak = (LinearLayout) findViewById(R.id.linearLayout_pronunciation_speak);
-        textView_pronunciation_speak_eng = (TextView) findViewById(R.id.textView_pronunciation_speak_eng);
 
         button_pronunciation_speak.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -64,34 +64,6 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout_pronunciation_speak"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:orientation="vertical"
-        android:padding="8dp"
-        android:visibility="gone"
-        android:layout_below="@id/relativeLayout_pronunciation">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="90dp"
-            android:layout_marginTop="16dp"
-            android:src="@drawable/speaker" />
-
-
-        <TextView
-            android:id="@+id/textView_pronunciation_speak_eng"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:text="Frase em ingles"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
-
-    </LinearLayout>
 
 
 </RelativeLayout>
