@@ -1,5 +1,6 @@
 package com.sow.inglesparaviagem;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -14,6 +15,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,30 +46,19 @@ import butterknife.OnClick;
 
 public class CategoryActivity extends AppCompatActivity implements CategoryView {
 
-    @BindView(R.id.relativeLayout_category)
-    RelativeLayout relativeLayout_category;
-    @BindView(R.id.textView_title)
-    TextView textView_title;
-    @BindView(R.id.imageView_category)
-    ImageView imageView_category;
-    @BindView(R.id.recyclerView_phrases)
-    RecyclerView recyclerView_phrases;
-    @BindView(R.id.toolbar_category)
-    Toolbar toolbar;
+    @BindView(R.id.relativeLayout_category)    RelativeLayout relativeLayout_category;
+    @BindView(R.id.textView_title) TextView textView_title;
+    @BindView(R.id.imageView_category) ImageView imageView_category;
+    @BindView(R.id.recyclerView_phrases) RecyclerView recyclerView_phrases;
+    @BindView(R.id.toolbar_category) Toolbar toolbar;
+    @BindView(R.id.adView) AdView adView;
+    @BindView(R.id.imageView_settings) ImageView imageView_settings;
+    @BindView(R.id.rlPhrase) RelativeLayout rlPhrase;
+    @BindView(R.id.rlSettingsPanel) RelativeLayout rlSettingsPanel;
     @BindView(R.id.textViewPhraseEng) TextView textViewPhraseEng;
     @BindView(R.id.imageView_icon_speaker) ImageView imageView_icon_speaker;
-    @BindView(R.id.adView)
-    AdView adView;
-    @BindView(R.id.imageView_settings)
-    ImageView imageView_settings;
-    @BindView(R.id.rlSettingsPanel)
-    RelativeLayout rlSettingsPanel;
-    @BindView(R.id.rlPhrase)
-    RelativeLayout rlPhrase;
-
-
-
-
+    @BindView(R.id.seekBarSpeechSpeed) SeekBar seekBarSpeechSpeed;
+    @BindView(R.id.seekBarVolume) SeekBar seekBarVolume;
 
 
     private String TAG = "CategoryActivity";
@@ -205,6 +196,31 @@ public class CategoryActivity extends AppCompatActivity implements CategoryView 
         } else {
             rlSettingsPanel.setVisibility(View.VISIBLE);
             imageView_settings.setImageDrawable(getDrawable(R.drawable.ic_action_arrow_hide));
+
+            seekBarVolume.setProgress(myApplication.getAudioManager().getStreamVolume(AudioManager.STREAM_MUSIC));
+            seekBarVolume.setMax(myApplication.getAudioManager().getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+
+            seekBarSpeechSpeed.setProgress((int) (myApplication.getSharedPreferences().getFloat("speechRate", 1)*10) );
+            seekBarSpeechSpeed.setMax(20);
+            seekBarSpeechSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    myApplication.getTts().setSpeechRate(Float.valueOf(seekBar.getProgress())/10);
+                    myApplication.getSharedPreferences().edit().putFloat("speechRate", Float.valueOf(seekBar.getProgress())/10).apply();
+                    Log.i(TAG, "speechRate: " + myApplication.getSharedPreferences().getFloat("speechRate", 1));
+                }
+            });
+
+
         }
 
     }

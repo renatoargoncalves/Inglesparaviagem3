@@ -1,63 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/content_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:mContext="com.sow.inglesparaviagem.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/app_bar_main"
+    android:id="@+id/coordinatorLayout">
 
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView_categories"
+    <RelativeLayout
+        android:id="@+id/content_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/linearLayout_main_adView" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout_search"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/linearLayout_main_adView"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView_search"
+            android:id="@+id/recyclerView_categories"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/lightGray" />
-    </LinearLayout>
+            android:layout_above="@+id/linearLayout_main_adView" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout_main_adView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
+        <RelativeLayout
+            android:id="@+id/relativeLayout_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/linearLayout_main_adView"
+            android:visibility="gone"
+            android:background="@color/lightGray">
 
-        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/adView"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/textViewSearchPortIng"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:textAlignment="center"
+                android:text="Pesquise por palavras em Português ou Inglês." />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/textViewSearchPortIng"
+                android:layout_above="@+id/llSpeaker"/>
+
+            <RelativeLayout
+                android:id="@+id/llSpeaker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/rlSettingsPanelContainer"
+                android:background="@color/colorPrimary"
+                android:clickable="true"
+                android:elevation="8dp">
+
+                <RelativeLayout
+                    android:id="@+id/rlPhrase"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:clickable="true"
+                    android:elevation="8dp"
+                    android:layout_toLeftOf="@+id/rlSettings"
+                    android:layout_alignParentLeft="true">
+
+                    <ImageButton
+                        android:id="@+id/imageView_icon_speaker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="8dp"
+                        android:background="?android:selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_action_speaker" />
+
+                    <TextView
+                        android:id="@+id/textViewPhraseEng"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@id/imageView_icon_speaker"
+                        android:text="Please, where can I exchange money?"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+                        android:textColor="@color/white" />
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:clickable="true"
+                    android:elevation="8dp"
+                    android:layout_alignParentRight="true">
+
+                    <ImageButton
+                        android:id="@+id/imageView_settings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="8dp"
+                        android:background="?android:selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_action_show" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rlSettingsPanelContainer"
+                android:layout_alignParentBottom="true"
+                android:clickable="true"
+                android:elevation="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/rlSettingsPanel"
+                    android:padding="8dp"
+                    android:background="@color/colorPrimary"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Configurações de audio:"
+                        android:textColor="@color/white"
+                        android:id="@+id/tvSettings"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tvSpeechSpeed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Velocidade de fala:"
+                        android:textColor="@color/white"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_below="@+id/tvSettings"/>
+
+
+                    <SeekBar
+                        android:id="@+id/seekBarSpeechSpeed"
+                        android:layout_toRightOf="@+id/tvSpeechSpeed"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvSettings"
+                        android:layout_marginTop="24dp"/>
+
+                    <TextView
+                        android:id="@+id/tvVolume"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Volume de fala:"
+                        android:textColor="@color/white"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_below="@+id/tvSpeechSpeed"/>
+
+
+                    <SeekBar
+                        android:id="@+id/seekBarVolume"
+                        android:layout_alignStart="@+id/seekBarSpeechSpeed"
+                        android:layout_toRightOf="@+id/tvVolume"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/seekBarSpeechSpeed"
+                        android:layout_marginTop="24dp"/>
+
+                </RelativeLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+
+
+
+
+
+
+        <LinearLayout
+            android:id="@+id/linearLayout_main_adView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            ads:adSize="SMART_BANNER"
-            ads:adUnitId="ca-app-pub-9665998162830641/9876302602"></com.google.android.gms.ads.AdView>
-    </LinearLayout>
+            android:orientation="vertical"
+            android:visibility="visible">
 
-    <com.google.android.gms.plus.PlusOneButton xmlns:plus="http://schemas.android.com/apk/lib/com.google.android.gms.plus"
-        android:id="@+id/plus_one_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout_main_adView"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginRight="8dp"
-        plus:annotation="bubble"
-        plus:size="standard" />
+            <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/adView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                ads:adSize="SMART_BANNER"
+                ads:adUnitId="ca-app-pub-9665998162830641/9876302602"></com.google.android.gms.ads.AdView>
+        </LinearLayout>
 
-</RelativeLayout>
+        <!--
+        <com.google.android.gms.plus.PlusOneButton xmlns:plus="http://schemas.android.com/apk/lib/com.google.android.gms.plus"
+            android:id="@+id/plus_one_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout_main_adView"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="8dp"
+            plus:annotation="bubble"
+            plus:size="standard" />
+        -->
+    </RelativeLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

@@ -2,6 +2,7 @@ package com.sow.inglesparaviagem.application;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
@@ -28,17 +29,25 @@ public class MyApplication extends Application implements
     private TextToSpeech tts;
     private HashMap<String, String> params = new HashMap<String, String>();
     private SpeechActivityDetected speechActivityDetected;
-
+    private AudioManager audioManager;
+    private float speechRate = 1;
+    private int streamVolume = 0;
+    private SharedPreferences sharedPreferences;
+    private static final String SP_KEY = "sharedInglesParaViagem";
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i(TAG, "onCreate()");
+        Log.w(TAG, "onCreate()");
         try {
+            sharedPreferences = getApplicationContext().getSharedPreferences(SP_KEY, MODE_PRIVATE);
+            speechRate = sharedPreferences.getFloat("speechRate", 1);
+            Log.i(TAG, "onCreate(): speechRate: " + sharedPreferences.getFloat("speechRate", 1));
+
             tts = new TextToSpeech(this, this);
 
-            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 10, 0);
+            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
             params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "inglesparaviagem");
             speechActivityDetected = new SpeechActivityDetected();
@@ -54,6 +63,8 @@ public class MyApplication extends Application implements
         try {
             Log.i(TAG, "onInit()");
             if (status == TextToSpeech.SUCCESS) {
+                tts.setSpeechRate(speechRate);
+
                 if (isEnglishLanguageAvaialbe(tts.setLanguage(Locale.ENGLISH))) {
                     tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
 
@@ -82,7 +93,7 @@ public class MyApplication extends Application implements
                 Toast.makeText(context, "Há um problema com seu mecanismo text-to-speech.", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-
+            Log.e(TAG, "onInit: " + e.getMessage());
         }
     }
 
@@ -123,5 +134,37 @@ public class MyApplication extends Application implements
 
     public void setSpeechActivityDetected(SpeechActivityDetected speechActivityDetected) {
         this.speechActivityDetected = speechActivityDetected;
+    }
+
+    public AudioManager getAudioManager() {
+        return audioManager;
+    }
+
+    public void setAudioManager(AudioManager audioManager) {
+        this.audioManager = audioManager;
+    }
+
+    public float getSpeechRate() {
+        return speechRate;
+    }
+
+    public void setSpeechRate(float speechRate) {
+        this.speechRate = speechRate;
+    }
+
+    public int getStreamVolume() {
+        return streamVolume;
+    }
+
+    public void setStreamVolume(int streamVolume) {
+        this.streamVolume = streamVolume;
+    }
+
+    public SharedPreferences getSharedPreferences() {
+        return sharedPreferences;
+    }
+
+    public void setSharedPreferences(SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
     }
 }

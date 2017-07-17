@@ -10,4 +10,7 @@ public interface MainPresenter {
 
     void loadCategories(Context context);
 
+    void toogleSearchViewState(int visibility);
+
+    void filterPhrases(Context context, String query);
 }

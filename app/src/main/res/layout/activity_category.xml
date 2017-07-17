@@ -30,7 +30,9 @@
         android:layout_height="70dp"
         android:layout_below="@+id/appBarLayoutCategoty"
         android:padding="4dp"
-        android:transitionName="tRelativeLayout">
+        android:transitionName="tRelativeLayout"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp">
 
         <ImageView
             android:id="@+id/imageView_category"
@@ -46,7 +48,8 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/imageView_category"
             android:text="Title"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"
+            android:textColor="@color/common_google_signin_btn_text_dark"
             android:transitionName="tTextView" />
     </RelativeLayout>
 
@@ -194,7 +197,7 @@
 
 
             <SeekBar
-                android:id="@+id/seekBar"
+                android:id="@+id/seekBarVolume"
                 android:layout_alignStart="@+id/seekBarSpeechSpeed"
                 android:layout_toRightOf="@+id/tvVolume"
                 android:layout_width="match_parent"

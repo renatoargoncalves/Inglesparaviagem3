@@ -3,7 +3,7 @@
     android:id="@+id/cardView_category"
     android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:layout_margin="2dp"
+    android:layout_margin="1dp"
     android:elevation="2dp">
 
     <RelativeLayout
@@ -26,10 +26,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Title"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:layout_marginLeft="16dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="130dp"
-            android:transitionName="tTextView"/>
+            android:layout_toRightOf="@id/imageView_category"
+            android:transitionName="tTextView"
+            android:textSize="26sp"/>
 
 
     </RelativeLayout>
