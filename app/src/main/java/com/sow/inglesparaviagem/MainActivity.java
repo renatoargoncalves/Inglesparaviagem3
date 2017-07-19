@@ -7,12 +7,14 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -23,18 +25,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.sow.inglesparaviagem.adapters.CategoryAdapter;
 import com.sow.inglesparaviagem.adapters.PhraseAdapter;
 import com.sow.inglesparaviagem.application.MyApplication;
@@ -49,6 +52,7 @@ import com.sow.inglesparaviagem.events.OnStartSpeaking;
 import com.sow.inglesparaviagem.events.OnStopSpeaking;
 import com.sow.inglesparaviagem.events.OnToogleSearchViewToGone;
 import com.sow.inglesparaviagem.events.OnToogleSearchViewToVisible;
+import com.sow.inglesparaviagem.fragments.AudioSettingsFragment;
 import com.sow.inglesparaviagem.presenter.MainPresenter;
 import com.sow.inglesparaviagem.presenter.MainPresenterImpl;
 import com.sow.inglesparaviagem.view.MainView;
@@ -62,7 +66,6 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -82,14 +85,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.recyclerView_search) RecyclerView recyclerView_search;
 //    @BindView(R.id.plus_one_button) PlusOneButton mPlusOneButton;
     @BindView(R.id.coordinatorLayout) CoordinatorLayout coordinatorLayout;
-    @BindView(R.id.textViewSearchPortIng) TextView textViewSearchPortIng;
-    @BindView(R.id.imageView_settings) ImageView imageView_settings;
-    @BindView(R.id.rlSettingsPanel) RelativeLayout rlSettingsPanel;
-    @BindView(R.id.textViewPhraseEng) TextView textViewPhraseEng;
-    @BindView(R.id.imageView_icon_speaker) ImageView imageView_icon_speaker;
-    @BindView(R.id.seekBarSpeechSpeed) SeekBar seekBarSpeechSpeed;
-    @BindView(R.id.seekBarVolume) SeekBar seekBarVolume;
-
 
     //    private static final int PLUS_ONE_REQUEST_CODE = 1515;
     private String TAG = "MainActivity";
@@ -101,10 +96,12 @@ public class MainActivity extends AppCompatActivity
     private SharedPreferences sharedPref;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.LayoutManager layoutManagerSearch;
-
+    private AudioSettingsFragment audioSettingsFragment;
     private MainPresenter mMainPresenter;
     private ArrayList<Category> mCategories;
     private ArrayList<Phrase> mPhrases;
+    private AudioManager audio;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +110,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         UXCam.startWithKey(getString(R.string.uxcamkey));
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         myApplication = (MyApplication) getApplication();
 
@@ -127,8 +127,20 @@ public class MainActivity extends AppCompatActivity
 
         mMainPresenter = new MainPresenterImpl(this);
         mMainPresenter.loadCategories(this);
+
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("main");
+        if(fragment != null)
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+
+        audioSettingsFragment = new AudioSettingsFragment();
+        getSupportFragmentManager().beginTransaction().add(R.id.llFragmentContainer, audioSettingsFragment, "main").commit();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putBoolean("createFragment", true);
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
     private void setupRecyclerView(CategoryAdapter mAdapter) {
         Log.w(TAG, "MainActivity.setupRecyclerView()");
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -228,18 +240,27 @@ public class MainActivity extends AppCompatActivity
 
             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this, imagePair, textViewTitlePair, layoutPair);
             ActivityCompat.startActivity(MainActivity.this, transitionIntent, options.toBundle());
+
+            Bundle params = new Bundle();
+            params.putString("category", mCategories.get(position).getCategory());
+            mFirebaseAnalytics.logEvent("categoryEvent", params);
         }
     };
 
     @Override
     public void onBackPressed() {
+        Log.w(TAG, "onBackPressed()");
 
+        Log.i(TAG, "isDrawerOpen: " + drawer.isDrawerOpen(GravityCompat.START));
         if (drawer.isDrawerOpen(GravityCompat.START)) {
+            Log.i(TAG, "isDrawerOpen");
             drawer.closeDrawer(GravityCompat.START);
             return;
         }
 
+        Log.i(TAG, "isIconified: " + searchView.isIconified());
         if (!searchView.isIconified()) {
+            Log.i(TAG, "!isIconified");
             searchView.onActionViewCollapsed();
             relativeLayout_search.setVisibility(GONE);
             return;
@@ -292,7 +313,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-//        Toast.makeText(MainActivity.this, "onOptionsItemSelected(): id: " + id, Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
@@ -420,44 +440,35 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onItemClick(View v, int position) {
             Utils.hideSoftKeyboard(MainActivity.this, v);
-            textViewPhraseEng.setText(mPhrases.get(position).getEng());
+            audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            float maxVolume = Float.valueOf(audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            float currentVolume = Float.valueOf(audio.getStreamVolume(AudioManager.STREAM_MUSIC));
+            if(currentVolume <= maxVolume*0.05)
+                Snackbar.make(coordinatorLayout, "Aumente o volume para ouvir a pronúncia!", 2500).show();
+
+
+            audioSettingsFragment.getTextViewPhraseEng().setText(mPhrases.get(position).getEng());
             myApplication.getTts().speak(mPhrases.get(position).getEng(), TextToSpeech.QUEUE_FLUSH, null, "inglesparaviagem");
         }
     };
 
-    @OnClick(R.id.imageView_settings)
-    public void animateLayoutSettings() {
-        if(rlSettingsPanel.getVisibility() == View.VISIBLE) {
-            rlSettingsPanel.setVisibility(View.GONE);
-            imageView_settings.setImageDrawable(getDrawable(R.drawable.ic_action_show));
-        } else {
-            rlSettingsPanel.setVisibility(View.VISIBLE);
-            imageView_settings.setImageDrawable(getDrawable(R.drawable.ic_action_arrow_hide));
-
-            seekBarVolume.setProgress(myApplication.getAudioManager().getStreamVolume(AudioManager.STREAM_MUSIC));
-            seekBarVolume.setMax(myApplication.getAudioManager().getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-
-            seekBarSpeechSpeed.setProgress((int) (myApplication.getSharedPreferences().getFloat("speechRate", 1)*10) );
-            seekBarSpeechSpeed.setMax(20);
-            seekBarSpeechSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    myApplication.getTts().setSpeechRate(Float.valueOf(seekBar.getProgress())/10);
-                    myApplication.getSharedPreferences().edit().putFloat("speechRate", Float.valueOf(seekBar.getProgress())/10).apply();
-                    Log.i(TAG, "speechRate: " + myApplication.getSharedPreferences().getFloat("speechRate", 1));
-                }
-            });
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
+                        AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
+                return true;
+            case KeyEvent.KEYCODE_BACK:
+                onBackPressed();
+                return true;
+            default:
+                return false;
         }
-
     }
 
     /**
@@ -466,7 +477,7 @@ public class MainActivity extends AppCompatActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onStartSpeaking(OnStartSpeaking onStartSpeaking) {
         Log.w(TAG, "CategoryActivity.onStartSpeaking()");
-        imageView_icon_speaker.setImageDrawable(getDrawable(R.drawable.ic_action_stop_speaker));
+        audioSettingsFragment.getImageView_icon_speaker().setImageDrawable(getDrawable(R.drawable.ic_action_stop_speaker));
     }
 
     /**
@@ -475,7 +486,7 @@ public class MainActivity extends AppCompatActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onStopSpeaking(OnStopSpeaking onStopSpeaking) {
         Log.w(TAG, "CategoryActivity.onStopSpeaking()");
-        imageView_icon_speaker.setImageDrawable(getDrawable(R.drawable.ic_action_speaker));
+        audioSettingsFragment.getImageView_icon_speaker().setImageDrawable(getDrawable(R.drawable.ic_action_speaker));
     }
 
 }

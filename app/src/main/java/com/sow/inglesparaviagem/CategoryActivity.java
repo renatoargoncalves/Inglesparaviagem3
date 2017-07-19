@@ -1,9 +1,15 @@
 package com.sow.inglesparaviagem;
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,10 +20,9 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -30,6 +35,7 @@ import com.sow.inglesparaviagem.classes.Phrase;
 import com.sow.inglesparaviagem.events.OnLoadPhrasesEvent;
 import com.sow.inglesparaviagem.events.OnStartSpeaking;
 import com.sow.inglesparaviagem.events.OnStopSpeaking;
+import com.sow.inglesparaviagem.fragments.AudioSettingsFragment;
 import com.sow.inglesparaviagem.presenter.CategoryPresenterImpl;
 import com.sow.inglesparaviagem.view.CategoryView;
 import com.uxcam.UXCam;
@@ -42,7 +48,6 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class CategoryActivity extends AppCompatActivity implements CategoryView {
 
@@ -52,13 +57,8 @@ public class CategoryActivity extends AppCompatActivity implements CategoryView 
     @BindView(R.id.recyclerView_phrases) RecyclerView recyclerView_phrases;
     @BindView(R.id.toolbar_category) Toolbar toolbar;
     @BindView(R.id.adView) AdView adView;
-    @BindView(R.id.imageView_settings) ImageView imageView_settings;
-    @BindView(R.id.rlPhrase) RelativeLayout rlPhrase;
-    @BindView(R.id.rlSettingsPanel) RelativeLayout rlSettingsPanel;
-    @BindView(R.id.textViewPhraseEng) TextView textViewPhraseEng;
-    @BindView(R.id.imageView_icon_speaker) ImageView imageView_icon_speaker;
-    @BindView(R.id.seekBarSpeechSpeed) SeekBar seekBarSpeechSpeed;
-    @BindView(R.id.seekBarVolume) SeekBar seekBarVolume;
+    @BindView(R.id.llFragmentContainer) LinearLayout llFragmentContainer;
+    @BindView(R.id.coordinatorLayout) CoordinatorLayout coordinatorLayout;
 
 
     private String TAG = "CategoryActivity";
@@ -76,6 +76,8 @@ public class CategoryActivity extends AppCompatActivity implements CategoryView 
     private RelativeLayout llSpeaker;
     private RelativeLayout llSpeakerCollapsed;
     private ImageView imageViewSpeaker;
+    private AudioSettingsFragment audioSettingsFragment;
+    private FragmentTransaction mFragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,12 +149,39 @@ public class CategoryActivity extends AppCompatActivity implements CategoryView 
         layoutManager_phrases = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView_phrases.setLayoutManager(layoutManager_phrases);
         phraseAdapter = new PhraseAdapter(this, null, false);
+
+        audioSettingsFragment = new AudioSettingsFragment();
+        mFragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("main");
+        if(fragment != null)
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+
+        mFragmentTransaction.add(R.id.llFragmentContainer, audioSettingsFragment, "main").commit();
+        android.util.Log.i(TAG, "onCreate: "+ audioSettingsFragment.getTag());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putBoolean("createFragment", true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     PhraseAdapter.OnItemClickListener onItemClickListener = new PhraseAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(View v, int position) {
-            textViewPhraseEng.setText(mPhrases.get(position).getEng());
+            AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            float maxVolume = Float.valueOf(audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            float currentVolume = Float.valueOf(audio.getStreamVolume(AudioManager.STREAM_MUSIC));
+            if(currentVolume <= maxVolume*0.05)
+                Snackbar.make(coordinatorLayout, "Aumente o volume para ouvir a pronúncia!", 2500).show();
+
+            audioSettingsFragment.getTextViewPhraseEng().setText(mPhrases.get(position).getEng());
             myApplication.getTts().speak(mPhrases.get(position).getEng(), TextToSpeech.QUEUE_FLUSH, null, "inglesparaviagem");
         }
     };
@@ -179,51 +208,6 @@ public class CategoryActivity extends AppCompatActivity implements CategoryView 
 
     }
 
-    @OnClick(R.id.rlPhrase)
-    public void rlPhraseClicked() {
-        try {
-            myApplication.getTts().speak(textViewPhraseEng.getText(), TextToSpeech.QUEUE_FLUSH, null, "inglesparaviagem");
-        } catch (Exception e) {
-            Toast.makeText(this, "Clique em uma frase.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @OnClick(R.id.imageView_settings)
-    public void animateLayoutSettings() {
-        if(rlSettingsPanel.getVisibility() == View.VISIBLE) {
-            rlSettingsPanel.setVisibility(View.GONE);
-            imageView_settings.setImageDrawable(getDrawable(R.drawable.ic_action_show));
-        } else {
-            rlSettingsPanel.setVisibility(View.VISIBLE);
-            imageView_settings.setImageDrawable(getDrawable(R.drawable.ic_action_arrow_hide));
-
-            seekBarVolume.setProgress(myApplication.getAudioManager().getStreamVolume(AudioManager.STREAM_MUSIC));
-            seekBarVolume.setMax(myApplication.getAudioManager().getStreamMaxVolume(AudioManager.STREAM_MUSIC));
-
-            seekBarSpeechSpeed.setProgress((int) (myApplication.getSharedPreferences().getFloat("speechRate", 1)*10) );
-            seekBarSpeechSpeed.setMax(20);
-            seekBarSpeechSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-                    myApplication.getTts().setSpeechRate(Float.valueOf(seekBar.getProgress())/10);
-                    myApplication.getSharedPreferences().edit().putFloat("speechRate", Float.valueOf(seekBar.getProgress())/10).apply();
-                    Log.i(TAG, "speechRate: " + myApplication.getSharedPreferences().getFloat("speechRate", 1));
-                }
-            });
-
-
-        }
-
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -253,7 +237,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryView 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onStartSpeaking(OnStartSpeaking onStartSpeaking) {
         Log.w(TAG, "CategoryActivity.onStartSpeaking()");
-        imageView_icon_speaker.setImageDrawable(getDrawable(R.drawable.ic_action_stop_speaker));
+        audioSettingsFragment.getImageView_icon_speaker().setImageDrawable(getDrawable(R.drawable.ic_action_stop_speaker));
     }
 
     /**
@@ -262,7 +246,7 @@ public class CategoryActivity extends AppCompatActivity implements CategoryView 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onStopSpeaking(OnStopSpeaking onStopSpeaking) {
         Log.w(TAG, "CategoryActivity.onStopSpeaking()");
-        imageView_icon_speaker.setImageDrawable(getDrawable(R.drawable.ic_action_speaker));
+        audioSettingsFragment.getImageView_icon_speaker().setImageDrawable(getDrawable(R.drawable.ic_action_speaker));
     }
 
     private void setupAds() {

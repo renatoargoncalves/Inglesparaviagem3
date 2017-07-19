@@ -104,6 +104,7 @@ public class MyApplication extends Application implements
             return true;
     }
 
+
     public Context getContext() {
         return context;
     }

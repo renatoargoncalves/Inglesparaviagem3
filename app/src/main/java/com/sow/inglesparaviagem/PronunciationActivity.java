@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -26,10 +24,8 @@ public class PronunciationActivity extends AppCompatActivity {
 
     private EditText editText_pronunciation;
     private ImageButton button_pronunciation_speak, button_pronunciation_stop;
-    private LinearLayout linearLayout_pronunciation_speak;
     private MyApplication myApplication;
     private String TAG = "PronunciationActivity";
-    private TextView textView_pronunciation_speak_eng;
     private AdView adView;
     private AdRequest adRequest;
 
@@ -58,8 +54,6 @@ public class PronunciationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(editText_pronunciation.getWindowToken(), 0);
-                textView_pronunciation_speak_eng.setText(editText_pronunciation.getText().toString());
-                linearLayout_pronunciation_speak.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     myApplication.getTts().speak(editText_pronunciation.getText().toString(), TextToSpeech.QUEUE_FLUSH, null, "inglesparaviagem");
                 } else {
@@ -154,7 +148,6 @@ public class PronunciationActivity extends AppCompatActivity {
                                 toggleSoftInput(InputMethodManager.SHOW_FORCED,
                                         InputMethodManager.HIDE_IMPLICIT_ONLY);
 
-                        linearLayout_pronunciation_speak.setVisibility(View.GONE);
                     }
                 }, 1000);
             }
