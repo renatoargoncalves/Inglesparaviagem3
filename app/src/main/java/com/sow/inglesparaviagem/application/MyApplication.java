@@ -37,6 +37,7 @@ public class MyApplication extends Application implements
 
     @Override
     public void onCreate() {
+            // jenkins
         super.onCreate();
         Log.w(TAG, "onCreate()");
         try {
